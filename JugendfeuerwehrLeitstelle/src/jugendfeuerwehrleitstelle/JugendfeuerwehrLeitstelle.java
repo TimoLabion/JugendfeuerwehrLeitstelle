@@ -1,5 +1,7 @@
 package jugendfeuerwehrleitstelle;
 
+import java.awt.Image;
+import javax.swing.ImageIcon;
 import jugendfeuerwehrleitstelle.forms.Login;
 
 /**
@@ -14,6 +16,11 @@ public class JugendfeuerwehrLeitstelle {
     public static void main(String[] args) {
         Login log = new Login();
         
+        Image icon = new ImageIcon( "img/icon.png" ).getImage();
+        
+        log.setIconImage(icon);
+        
+        log.setLocationRelativeTo(null);
         log.setVisible(true);
         log.setFocusable(true);
         
