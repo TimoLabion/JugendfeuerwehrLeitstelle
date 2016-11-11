@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package jugendfeuerwehrleitstelle;
+
+import jugendfeuerwehrleitstelle.forms.Login;
 
 /**
  *
- * @author Timo
+ * @author Timo 
  */
 public class JugendfeuerwehrLeitstelle {
 
@@ -16,7 +12,11 @@ public class JugendfeuerwehrLeitstelle {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Hallo Welt");
+        Login log = new Login();
+        
+        log.setVisible(true);
+        log.setFocusable(true);
+        
     }
     
 }
