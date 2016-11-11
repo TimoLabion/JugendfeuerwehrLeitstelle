@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package jugendfeuerwehrleitstelle.forms;
 
+import javafx.scene.input.KeyCode;
 import javax.swing.JOptionPane;
 
 /**
@@ -13,6 +13,9 @@ import javax.swing.JOptionPane;
  * @author Timo
  */
 public class Login extends javax.swing.JFrame {
+
+    private final String TESTUSER = "admin";
+    private final String TESTPASSWORD = "admin";
 
     /**
      * Creates new form Login
@@ -38,6 +41,8 @@ public class Login extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Login");
+        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel1.setText("Anmeldung");
@@ -45,6 +50,18 @@ public class Login extends javax.swing.JFrame {
         jLabel2.setText("Benutzername:");
 
         jLabel3.setText("Passwort:");
+
+        jPasswordField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jPasswordField1KeyPressed(evt);
+            }
+        });
+
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextField1KeyPressed(evt);
+            }
+        });
 
         jButton1.setText("Anmelden");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -98,12 +115,33 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if(jTextField1.getText().equals("")) {
-            JOptionPane.showMessageDialog(this,"Bitte Benutzernamen eingeben","Falscher Benutzername",JOptionPane.ERROR_MESSAGE);
+
+        String _user = jTextField1.getText();
+        String _password = String.copyValueOf(jPasswordField1.getPassword());
+
+        if (_user.equals("")) {
+            JOptionPane.showMessageDialog(this, "Bitte Benutzernamen eingeben", "Falscher Benutzername", JOptionPane.ERROR_MESSAGE);
         } else {
-            
+            if ((_user.equals(this.TESTUSER) && _password.equals(this.TESTPASSWORD))) {
+                System.out.println("Login erfolgreich");
+            } else {
+                JOptionPane.showMessageDialog(this, "Benutzername oder Password falsch", "Fehler bei der Anmeldung", JOptionPane.ERROR_MESSAGE);
+            }
+
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jPasswordField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPasswordField1KeyPressed
+        if (evt.getKeyCode() == 10) {
+            this.jButton1ActionPerformed(null);
+        }
+    }//GEN-LAST:event_jPasswordField1KeyPressed
+
+    private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
+        if (evt.getKeyCode() == 10) {
+            this.jButton1ActionPerformed(null);
+        }
+    }//GEN-LAST:event_jTextField1KeyPressed
 
     /**
      * @param args the command line arguments
