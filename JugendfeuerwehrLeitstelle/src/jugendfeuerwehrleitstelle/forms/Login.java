@@ -5,7 +5,12 @@
  */
 package jugendfeuerwehrleitstelle.forms;
 
+import java.awt.Image;
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.input.KeyCode;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -17,11 +22,23 @@ public class Login extends javax.swing.JFrame {
     private final String TESTUSER = "admin";
     private final String TESTPASSWORD = "admin";
 
+    private final String SQLHost = "localhost";
+    private final String SQLUser = "root";
+    private final String SQLPassword = "";
+    private final String SQLPort = "3306";
+    private final String SQLDatabase = "leitstelle";
+
     /**
      * Creates new form Login
      */
     public Login() {
         initComponents();
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -116,16 +133,51 @@ public class Login extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
+        Connection connect = null;
+        Statement statement = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
         String _user = jTextField1.getText();
         String _password = String.copyValueOf(jPasswordField1.getPassword());
 
         if (_user.equals("")) {
             JOptionPane.showMessageDialog(this, "Bitte Benutzernamen eingeben", "Falscher Benutzername", JOptionPane.ERROR_MESSAGE);
         } else {
-            if ((_user.equals(this.TESTUSER) && _password.equals(this.TESTPASSWORD))) {
-                System.out.println("Login erfolgreich");
-            } else {
-                JOptionPane.showMessageDialog(this, "Benutzername oder Password falsch", "Fehler bei der Anmeldung", JOptionPane.ERROR_MESSAGE);
+            try {
+                connect = DriverManager.getConnection("jdbc:mysql://" + SQLHost + "/" + SQLDatabase + "?"
+                        + "user=" + SQLUser + "&password=" + SQLPassword);
+
+                statement = connect.createStatement();
+
+                resultSet = statement.executeQuery("select * from user where name='" + _user + "'");
+
+                if (resultSet.next()) {
+
+                    if (_password.equals(resultSet.getString(3))) {
+                        System.out.println("Login erfolgreich");
+
+                        Uebersicht uebersicht = new Uebersicht();
+
+                        Image icon = new ImageIcon("img/icon.png").getImage();
+
+                        uebersicht.setIconImage(icon);
+
+                        uebersicht.setLocationRelativeTo(null);
+                        uebersicht.setTitle("Leitstelle (" + _user + ")");
+                        uebersicht.setVisible(true);
+                        uebersicht.setFocusable(true);
+
+                        this.dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Benutzername oder Passwort flasch!", "Anmeldefehler", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(this, "Benutzername oder Passwort flasch!", "Anmeldefehler", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
