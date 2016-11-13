@@ -155,9 +155,15 @@ public class Login extends javax.swing.JFrame {
                 if (resultSet.next()) {
 
                     if (_password.equals(resultSet.getString(3))) {
-                        System.out.println("Login erfolgreich");
+                        System.out.println("Login erfolgreich User: "+_user);
+                        
+                        boolean isAdmin = false;
+                        
+                        if (resultSet.getInt("isAdmin")== 1) {
+                            isAdmin = true;
+                        } 
 
-                        Uebersicht uebersicht = new Uebersicht();
+                        Uebersicht uebersicht = new Uebersicht(isAdmin);
 
                         Image icon = new ImageIcon("img/icon.png").getImage();
 
@@ -165,8 +171,8 @@ public class Login extends javax.swing.JFrame {
 
                         uebersicht.setLocationRelativeTo(null);
                         uebersicht.setTitle("Leitstelle (" + _user + ")");
-                        uebersicht.setVisible(true);
-                        uebersicht.setFocusable(true);
+                        //uebersicht.setVisible(true);
+                        //uebersicht.setFocusable(true);
 
                         this.dispose();
                     } else {
