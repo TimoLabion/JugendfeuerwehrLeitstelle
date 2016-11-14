@@ -23,9 +23,7 @@ public class FahrzeugTableRenderer extends DefaultTableCellRenderer {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
         String status = (String) table.getModel().getValueAt(row, 3);
-
-        System.out.println(status);
-
+        
         if ("1".equals(status)) {
             setBackground(Color.WHITE);
             setForeground(Color.BLACK);

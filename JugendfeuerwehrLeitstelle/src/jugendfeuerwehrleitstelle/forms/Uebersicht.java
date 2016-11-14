@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import jugendfeuerwehrleitstelle.impl.FahrzeugTableRenderer;
+import jugendfeuerwehrleitstelle.impl.FahrzeugeAktualisieren;
 
 /**
  *
@@ -41,6 +42,17 @@ public class Uebersicht extends javax.swing.JFrame {
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
 
+    private String[] columnNames = {
+        "Nr", "Fahrzeug", "Funkrufname", "Status"
+    };
+
+    private String[][] fhz;
+
+    private DefaultTableModel model;
+    private ArrayList<ArrayList<String>> fahrzeuge;
+    
+    private FahrzeugeAktualisieren fa;
+
     /**
      * Creates new form uebersicht
      */
@@ -58,7 +70,7 @@ public class Uebersicht extends javax.swing.JFrame {
         } else {
             jLabel1.setText("Kein Administrator");
         }
-        ArrayList<ArrayList<String>> al = new ArrayList<>();
+        fahrzeuge = new ArrayList<>();
 
         try {
             connect = DriverManager.getConnection("jdbc:mysql://" + SQLHost + "/" + SQLDatabase + "?"
@@ -76,36 +88,27 @@ public class Uebersicht extends javax.swing.JFrame {
                 help.add(resultSet.getString(3));
                 help.add(resultSet.getString(4));
 
-                al.add(help);
+                fahrzeuge.add(help);
             }
 
         } catch (SQLException ex) {
             Logger.getLogger(Uebersicht.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        String[] columnNames = {
-            "Nr", "Fahrzeug", "Funkrufname", "Status"
-        };
-
-        String[][] fhz = new String[al.size()][4];
-
-        for (int i = 0; i < al.size(); i++) {
-            fhz[i][0] = al.get(i).get(0);
-            fhz[i][1] = al.get(i).get(1);
-            fhz[i][2] = al.get(i).get(2);
-            fhz[i][3] = al.get(i).get(3);
-        }
+        this.buildTable(fahrzeuge, jTable1);
 
         System.out.println();
 
-        DefaultTableModel model;
-        model = new DefaultTableModel(fhz, columnNames);
-        jTable1.setModel(model);
         jTable1.setDefaultRenderer(Object.class, new FahrzeugTableRenderer());
 
         this.pack();
 
         this.setVisible(true);
+        
+        fa = new FahrzeugeAktualisieren(jTable1, fahrzeuge);
+        fa.setRun(true);
+        
+        fa.start();
     }
 
     /**
@@ -122,6 +125,7 @@ public class Uebersicht extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -132,6 +136,11 @@ public class Uebersicht extends javax.swing.JFrame {
         jMenu1.setText("jMenu1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Fahrzeugübersicht"));
 
@@ -146,6 +155,7 @@ public class Uebersicht extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.setEnabled(false);
         jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -165,6 +175,13 @@ public class Uebersicht extends javax.swing.JFrame {
         );
 
         jLabel1.setText("jLabel1");
+
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jMenu2.setText("Programm");
 
@@ -197,7 +214,9 @@ public class Uebersicht extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(405, Short.MAX_VALUE)
+                .addGap(98, 98, 98)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(209, 209, 209))
             .addGroup(layout.createSequentialGroup()
@@ -210,8 +229,13 @@ public class Uebersicht extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(90, 90, 90)
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(142, 142, 142)
+                        .addComponent(jButton1)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -235,6 +259,23 @@ public class Uebersicht extends javax.swing.JFrame {
 
         this.dispose();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        ArrayList<String> help = new ArrayList<>();
+
+        help.add("3");
+        help.add("MTW");
+        help.add("31-35-36");
+        help.add("6");
+
+        fahrzeuge.add(help);
+        
+        this.buildTable(fahrzeuge, jTable1);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+       fa.setRun(false);
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments
@@ -271,7 +312,22 @@ public class Uebersicht extends javax.swing.JFrame {
         });
     }
 
+    private void buildTable(ArrayList<ArrayList<String>> list, JTable table) {
+        fhz = new String[list.size()][4];
+
+        for (int i = 0; i < list.size(); i++) {
+            fhz[i][0] = list.get(i).get(0);
+            fhz[i][1] = list.get(i).get(1);
+            fhz[i][2] = list.get(i).get(2);
+            fhz[i][3] = list.get(i).get(3);
+        }
+
+        DefaultTableModel dtm = new DefaultTableModel(fhz, columnNames);
+        table.setModel(dtm);
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
