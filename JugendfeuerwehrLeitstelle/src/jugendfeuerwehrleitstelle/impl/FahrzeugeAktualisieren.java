@@ -54,6 +54,7 @@ public class FahrzeugeAktualisieren extends Thread {
 
     @Override
     public void run() {
+        System.out.println("Start FahrzeugeAktualisieren Thread");
         while (_run) {
 
             try {
@@ -89,8 +90,10 @@ public class FahrzeugeAktualisieren extends Thread {
             } catch (InterruptedException ex) {
                 Logger.getLogger(FahrzeugeAktualisieren.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
 
         }
+         System.out.println("Stop FahrzeugeAktualisieren Thread");
     }
 
     private void buildTable(ArrayList<ArrayList<String>> list, JTable table) {
