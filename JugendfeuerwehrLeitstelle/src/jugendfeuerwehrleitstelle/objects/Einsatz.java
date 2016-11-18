@@ -18,22 +18,26 @@ public class Einsatz {
     
     private int id;
     
-    private String anruferName;
-    private String anruferStraße;
-    private String anruferOrt;
-    private String anruferTelefon;
+    private String anruferName = "";
+    private String anruferStraße = "";
+    private String anruferOrt = "";
+    private String anruferTelefon = "";
     
-    private String einsatzStraße;
-    private String einsatzHausnummer;
-    private String einsatzPLZ;
-    private String einsatzOrt;
-    private String einsatzKreuzung;
+    private String einsatzStraße = "";
+    private String einsatzHausnummer = "";
+    private String einsatzPLZ = "";
+    private String einsatzOrt = "";
+    private String einsatzKreuzung = "";
     
-    private String stichwort;
-    private String beschreibung;
+    private String stichwort = "";
+    private String beschreibung = "";
     
     private Date einsatzDatum;
     private Date einsatzZeit;
+    
+    private String einsatzStatus = "";
+    
+    private String einsatzLage = "";
 
     /**
      * @return the id
@@ -231,10 +235,32 @@ public class Einsatz {
         this.einsatzZeit = einsatzZeit;
     }
 
-    public Einsatz() {
+            /**
+     * @return the einsatzStatus
+     */
+    public String getEinsatzStatus() {
+        return einsatzStatus;
     }
 
-    public Einsatz(int id, String anruferName, String anruferStraße, String anruferOrt, String anruferTelefon, String einsatzStraße, String einsatzHausnummer, String einsatzPLZ, String einsatzOrt, String einsatzKreuzung, String stichwort, String beschreibung, Date einsatzDatum, Date einsatzZeit) {
+    /**
+     * @param einsatzStatus the einsatzStatus to set
+     */
+    public void setEinsatzStatus(String einsatzStatus) {
+        this.einsatzStatus = einsatzStatus;
+    }
+
+    public String getEinsatzLage() {
+        return einsatzLage;
+    }
+
+    public void setEinsatzLage(String einsatzLage) {
+        this.einsatzLage = einsatzLage;
+    }
+    
+    public Einsatz() {
+    }
+    
+    public Einsatz(int id, String anruferName, String anruferStraße, String anruferOrt, String anruferTelefon, String einsatzStraße, String einsatzHausnummer, String einsatzPLZ, String einsatzOrt, String einsatzKreuzung, String stichwort, String beschreibung, Date einsatzDatum, Date einsatzZeit, String einsatzStatus) {
         this.id = id;
         this.anruferName = anruferName;
         this.anruferStraße = anruferStraße;
@@ -249,7 +275,10 @@ public class Einsatz {
         this.beschreibung = beschreibung;
         this.einsatzDatum = einsatzDatum;
         this.einsatzZeit = einsatzZeit;
+        this.einsatzStatus = einsatzStatus;
     }
+    
+    
 
     @Override
     public String toString() {
@@ -259,6 +288,8 @@ public class Einsatz {
         
         return id + " | "+ dfDate.format(einsatzDatum) + " " + dfTime.format(einsatzZeit) + " | " + einsatzOrt + " | " + stichwort;
     }
+
+
     
     
     

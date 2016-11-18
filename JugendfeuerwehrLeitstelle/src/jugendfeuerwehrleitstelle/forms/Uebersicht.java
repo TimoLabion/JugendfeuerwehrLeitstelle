@@ -16,10 +16,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import jugendfeuerwehrleitstelle.impl.EinsatzListRenderer;
 import jugendfeuerwehrleitstelle.impl.FahrzeugTableRenderer;
 import jugendfeuerwehrleitstelle.impl.FahrzeugeAktualisieren;
 import jugendfeuerwehrleitstelle.objects.Einsatz;
@@ -73,6 +76,7 @@ public class Uebersicht extends javax.swing.JFrame {
             jLabel1.setText("Kein Administrator");
         }
         fahrzeuge = new ArrayList<>();
+        einsaetze = new ArrayList<>();
 
         try {
             connect = DriverManager.getConnection("jdbc:mysql://" + SQLHost + "/" + SQLDatabase + "?"
@@ -93,6 +97,54 @@ public class Uebersicht extends javax.swing.JFrame {
                 fahrzeuge.add(help);
             }
 
+            resultSet = statement.executeQuery("select * from einsaetze");
+
+            while (resultSet.next()) {
+                Einsatz e = new Einsatz();
+
+                e.setId(resultSet.getInt(1));
+                e.setAnruferName(resultSet.getString(2));
+                e.setAnruferTelefon(resultSet.getString(3));
+                e.setAnruferStraße(resultSet.getString(4));
+                e.setAnruferOrt(resultSet.getString(5));
+
+                e.setEinsatzStraße(resultSet.getString(6));
+                e.setEinsatzHausnummer(resultSet.getString(7));
+                e.setEinsatzPLZ(resultSet.getString(8));
+                e.setEinsatzOrt(resultSet.getString(9));
+                e.setEinsatzKreuzung(resultSet.getString(10));
+
+                int stichwort = resultSet.getInt(11);
+
+                System.out.println(stichwort);
+
+                Statement s = connect.createStatement();
+
+                ResultSet rs = s.executeQuery("select * from stichworte where stichworteID=" + stichwort);
+
+                if (rs.next()) {
+                    e.setStichwort(rs.getString(2));
+                }
+
+                e.setBeschreibung(resultSet.getString(12));
+                e.setEinsatzDatum(resultSet.getDate(13));
+                e.setEinsatzZeit(resultSet.getTime(14));
+
+                int status = resultSet.getInt(15);
+
+                Statement s1 = connect.createStatement();
+
+                ResultSet rs1 = s1.executeQuery("select * from einsatzstatus where einsatzStatusID=" + status);
+
+                if (rs1.next()) {
+                    e.setEinsatzStatus(rs1.getString(2));
+                }
+                
+                e.setEinsatzLage(resultSet.getString(16));
+
+                einsaetze.add(e);
+            }
+
         } catch (SQLException ex) {
             Logger.getLogger(Uebersicht.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -102,18 +154,15 @@ public class Uebersicht extends javax.swing.JFrame {
         System.out.println();
 
         jTable1.setDefaultRenderer(Object.class, new FahrzeugTableRenderer());
-        
-        Einsatz e = new Einsatz(1,"Klaus Dieter","Musterweg 23","Musterstadt","02302123456","Hauptstraße","60","58452","Witten","","Feuer","Gebäudebrand, Personen in Gefahr",new Date(2016,11,17),new Date(2016,11,17,22,03));
 
-        einsaetze = new ArrayList<>();
-        
-        einsaetze.add(e);
-        
         DefaultListModel<Einsatz> model = new DefaultListModel<Einsatz>();
+
         for (Einsatz s : einsaetze) {
             model.addElement(s);
         }
-        
+
+        lEinsatz.setCellRenderer(new EinsatzListRenderer());
+
         lEinsatz.setModel(model);
 
         this.pack();
@@ -211,6 +260,11 @@ public class Uebersicht extends javax.swing.JFrame {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
+        });
+        lEinsatz.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lEinsatzMouseClicked(evt);
+            }
         });
         jScrollPane2.setViewportView(lEinsatz);
 
@@ -332,6 +386,27 @@ public class Uebersicht extends javax.swing.JFrame {
         ne.setVisible(true);
         ne.setFocusable(true);
     }//GEN-LAST:event_bNeuerEinsatzActionPerformed
+
+    private void lEinsatzMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lEinsatzMouseClicked
+        JList list = (JList) evt.getSource();
+        if (evt.getClickCount() == 2) {
+            int index = list.locationToIndex(evt.getPoint());
+
+            Einsatz e = (Einsatz) list.getSelectedValue();
+
+            EinsatzDetails ed = new EinsatzDetails(this, e);
+
+            Image icon = new ImageIcon("img/icon.png").getImage();
+
+            ed.setIconImage(icon);
+
+            ed.setLocationRelativeTo(null);
+            ed.setVisible(true);
+            this.setEnabled(false);
+            ed.requestFocus();
+
+        }
+    }//GEN-LAST:event_lEinsatzMouseClicked
 
     /**
      * @param args the command line arguments
